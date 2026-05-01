@@ -1,0 +1,197 @@
+mysql> use db1;
+Database changed
+mysql> create table employee(empid int,name varchar(20),salary int,departid int);
+Query OK, 0 rows affected (0.05 sec)
+
+mysql> desc employee;
++----------+-------------+------+-----+---------+-------+
+| Field    | Type        | Null | Key | Default | Extra |
++----------+-------------+------+-----+---------+-------+
+| empid    | int         | YES  |     | NULL    |       |
+| name     | varchar(20) | YES  |     | NULL    |       |
+| salary   | int         | YES  |     | NULL    |       |
+| departid | int         | YES  |     | NULL    |       |
++----------+-------------+------+-----+---------+-------+
+4 rows in set (0.01 sec)
+
+mysql> create table dpart(departid int,departname varchar(30));
+Query OK, 0 rows affected (0.04 sec)
+
+mysql> desc dpart;
++------------+-------------+------+-----+---------+-------+
+| Field      | Type        | Null | Key | Default | Extra |
++------------+-------------+------+-----+---------+-------+
+| departid   | int         | YES  |     | NULL    |       |
+| departname | varchar(30) | YES  |     | NULL    |       |
++------------+-------------+------+-----+---------+-------+
+2 rows in set (0.00 sec)
+
+mysql> insert into employee values(101,"vikram",34567,1),(102,"aruna",25000,2),(103,"basker",12000,1),(104,"latha",16700,4),(105,"geetha",34800,3);
+Query OK, 5 rows affected (0.02 sec)
+Records: 5  Duplicates: 0  Warnings: 0
+
+mysql> select * from employee;
++-------+--------+--------+----------+
+| empid | name   | salary | departid |
++-------+--------+--------+----------+
+|   101 | vikram |  34567 |        1 |
+|   102 | aruna  |  25000 |        2 |
+|   103 | basker |  12000 |        1 |
+|   104 | latha  |  16700 |        4 |
+|   105 | geetha |  34800 |        3 |
++-------+--------+--------+----------+
+5 rows in set (0.00 sec)
+
+mysql> insert into dpart values(1,"sales"),(2,"perchase"),(3,"marketing"),(5,"it");
+Query OK, 4 rows affected (0.03 sec)
+Records: 4  Duplicates: 0  Warnings: 0
+
+mysql> select * from dpart;
++----------+------------+
+| departid | departname |
++----------+------------+
+|        1 | sales      |
+|        2 | perchase   |
+|        3 | marketing  |
+|        5 | it         |
++----------+------------+
+4 rows in set (0.00 sec)
+
+mysql> select empid,name,salary,departname from employee e join dpart d on e.departid=d.departid;
++-------+--------+--------+------------+
+| empid | name   | salary | departname |
++-------+--------+--------+------------+
+|   101 | vikram |  34567 | sales      |
+|   102 | aruna  |  25000 | perchase   |
+|   103 | basker |  12000 | sales      |
+|   105 | geetha |  34800 | marketing  |
++-------+--------+--------+------------+
+4 rows in set (0.00 sec)
+
+mysql> select name from employee union select departname from dpart;
++-----------+
+| name      |
++-----------+
+| vikram    |
+| aruna     |
+| basker    |
+| latha     |
+| geetha    |
+| sales     |
+| perchase  |
+| marketing |
+| it        |
++-----------+
+9 rows in set (0.00 sec)
+
+mysql> select e.name,d.departname from employee e right join dpart d on e.departid;
++--------+------------+
+| name   | departname |
++--------+------------+
+| geetha | sales      |
+| latha  | sales      |
+| basker | sales      |
+| aruna  | sales      |
+| vikram | sales      |
+| geetha | perchase   |
+| latha  | perchase   |
+| basker | perchase   |
+| aruna  | perchase   |
+| vikram | perchase   |
+| geetha | marketing  |
+| latha  | marketing  |
+| basker | marketing  |
+| aruna  | marketing  |
+| vikram | marketing  |
+| geetha | it         |
+| latha  | it         |
+| basker | it         |
+| aruna  | it         |
+| vikram | it         |
++--------+------------+
+20 rows in set (0.00 sec)
+
+mysql> select e.name,d.departname from employee e left join dpart d on e.departid;
++--------+------------+
+| name   | departname |
++--------+------------+
+| vikram | it         |
+| vikram | marketing  |
+| vikram | perchase   |
+| vikram | sales      |
+| aruna  | it         |
+| aruna  | marketing  |
+| aruna  | perchase   |
+| aruna  | sales      |
+| basker | it         |
+| basker | marketing  |
+| basker | perchase   |
+| basker | sales      |
+| latha  | it         |
+| latha  | marketing  |
+| latha  | perchase   |
+| latha  | sales      |
+| geetha | it         |
+| geetha | marketing  |
+| geetha | perchase   |
+| geetha | sales      |
++--------+------------+
+20 rows in set (0.00 sec)
+
+mysql> select e.name,d.departname from employee e inner join dpart d on e.departid;
++--------+------------+
+| name   | departname |
++--------+------------+
+| vikram | it         |
+| vikram | marketing  |
+| vikram | perchase   |
+| vikram | sales      |
+| aruna  | it         |
+| aruna  | marketing  |
+| aruna  | perchase   |
+| aruna  | sales      |
+| basker | it         |
+| basker | marketing  |
+| basker | perchase   |
+| basker | sales      |
+| latha  | it         |
+| latha  | marketing  |
+| latha  | perchase   |
+| latha  | sales      |
+| geetha | it         |
+| geetha | marketing  |
+| geetha | perchase   |
+| geetha | sales      |
++--------+------------+
+20 rows in set (0.00 sec)
+
+mysql> select d.departname,count(e.empid)as total_employees from dpart d left join employee e on d.departid=e.departid group by d.departname;
++------------+-----------------+
+| departname | total_employees |
++------------+-----------------+
+| sales      |               2 |
+| perchase   |               1 |
+| marketing  |               1 |
+| it         |               0 |
++------------+-----------------+
+4 rows in set (0.02 sec)
+
+mysql> select d.departname,sum(e.salary)as total_salary from dpart d left join employee e on d.departid=e.departid group by d.departname;
++------------+--------------+
+| departname | total_salary |
++------------+--------------+
+| sales      |        46567 |
+| perchase   |        25000 |
+| marketing  |        34800 |
+| it         |         NULL |
++------------+--------------+
+4 rows in set (0.02 sec)
+
+mysql> update employee set salary=salary+(salary*0.10)where departid not in (select departid from dpart);
+Query OK, 1 row affected (0.03 sec)
+Rows matched: 1  Changed: 1  Warnings: 0
+
+mysql> delete from employee where departid in(select departid from dpart);
+Query OK, 4 rows affected (0.03 sec)
+
+mysql
